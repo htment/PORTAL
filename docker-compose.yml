@@ -17,6 +17,8 @@ services:
       - "--bind-address=0.0.0.0"  # Разрешает подключение извне контейнера
     volumes:
       - mysql_data:/var/lib/mysql
+    # НОВАЯ СТРОКА: Монтируем наш SQL-скрипт для инициализации привилегий
+      - ./mysql/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
     networks:
       - backend
     restart: unless-stopped  # Автоматически перезапускать контейнер при падении
@@ -28,6 +30,10 @@ services:
     networks:
       - backend
       - frontend
+    # Устанавливаем mysqli и другие нужные расширения
+    command: sh -c "docker-php-ext-install mysqli && php-fpm"
+    # ИЛИ через отдельный скрипт (лучше для сложных конфигураций)
+    # command: sh -c "/usr/local/bin/setup-php-extensions && php-fpm"
 
   php2:
     image: php:8.2-fpm
@@ -36,6 +42,7 @@ services:
     networks:
       - backend
       - frontend
+    command: sh -c "docker-php-ext-install mysqli && php-fpm"
 
   nginx:
     image: nginx:alpine

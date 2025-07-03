@@ -1,0 +1,1 @@
+rsync -avh  --exclude='.*' --progress /PORTAL/ art@192.168.31.44:/raid_upl/PORTAL2/
